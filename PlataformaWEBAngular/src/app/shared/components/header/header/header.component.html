@@ -1,0 +1,16 @@
+<div *ngIf="showHeader" class="header-container">
+  <nav class="flex items-center justify-between p-4 bg-gray-800 text-white">
+    <div class="text-lg font-bold">Plataforma</div>
+    <ul class="flex space-x-4">
+      <li *ngIf="userRole === 'Administrador'">
+        <a routerLink="/admin/dashboard" class="hover:underline">Dashboard</a>
+      </li>
+      <li *ngIf="userRole === 'Usuario'">
+        <a routerLink="/home" class="hover:underline">Inicio</a>
+      </li>
+      <li>
+        <button (click)="logout()" class="hover:underline">Cerrar Sesión</button>
+      </li>
+    </ul>
+  </nav>
+</div>

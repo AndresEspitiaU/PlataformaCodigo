@@ -42,19 +42,34 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                Console.WriteLine("Token recibido: " + context.Token);
+                return Task.CompletedTask;
+            },
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("Autenticación fallida: " + context.Exception.Message);
+                return Task.CompletedTask;
+            }
+        };
     });
 
-var corsPolicy = "ReactAppCorsPolicy";
+var corsPolicy = "FrontendCorsPolicy";
+
 builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicy, builder =>
     {
-        options.AddPolicy(name: corsPolicy, builder =>
-        {
-            builder.WithOrigins("http://localhost:5173") 
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials(); 
-        });
+        builder.WithOrigins("http://localhost:5173", "http://localhost:4200") // Agrega las URLs de React y Angular
+               .AllowAnyHeader()  // Permite cualquier encabezado
+               .AllowAnyMethod()  // Permite cualquier método HTTP
+               .AllowCredentials(); // Permite el uso de cookies o credenciales
     });
+});
 
 
 
@@ -93,7 +108,6 @@ app.MapGet("/weatherforecast", () =>
 
 // Usar CORS
 app.UseCors(corsPolicy);
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

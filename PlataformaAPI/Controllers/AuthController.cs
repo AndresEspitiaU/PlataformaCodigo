@@ -27,14 +27,14 @@ public class AuthController : ControllerBase
         // Validar si el usuario ya existe
         if (_context.Usuarios.Any(u => u.Email == registroDto.Email))
         {
-            return BadRequest("El correo ya está registrado.");
+            return BadRequest(new { mensaje = "El correo ya está registrado." });
         }
 
         // Buscar el rol predeterminado (Usuario)
         var rolUsuario = _context.Roles.FirstOrDefault(r => r.Nombre == "Usuario");
         if (rolUsuario == null)
         {
-            return BadRequest("El rol predeterminado 'Usuario' no está configurado.");
+            return BadRequest(new { mensaje = "El rol predeterminado 'Usuario' no está configurado." });
         }
 
         // Hashear la contraseña
@@ -56,39 +56,39 @@ public class AuthController : ControllerBase
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
 
-        return Ok("Usuario registrado exitosamente.");
+        return Ok(new { mensaje = "Usuario registrado exitosamente." });
     }
+
 
     // Inicio de Sesión
     [HttpPost("login")]
     public async Task<IActionResult> Login(UsuarioLoginDto loginDto)
     {
-        // Buscar el usuario en la base de datos
         var usuario = await _context.Usuarios
-            .Include(u => u.Rol) // Incluye el rol del usuario
+            .Include(u => u.Rol)
             .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
 
         if (usuario == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, usuario.PasswordHash))
         {
-            return Unauthorized("Credenciales incorrectas.");
+            return Unauthorized(new { mensaje = "Credenciales incorrectas." });
         }
 
-        // Generar el token JWT
         var token = GenerarToken(usuario);
 
         return Ok(new
         {
-            Token = token,
-            Usuario = new
+            token,
+            usuario = new
             {
                 usuario.UsuarioId,
                 usuario.Nombre,
                 usuario.Apellido,
                 usuario.Email,
-                Rol = usuario.Rol.Nombre // Devuelve el nombre del rol
+                Rol = usuario.Rol.Nombre
             }
         });
     }
+
 
     // Método para generar un token JWT
     private string GenerarToken(Usuario usuario)
@@ -96,8 +96,9 @@ public class AuthController : ControllerBase
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, usuario.Email),          // Email del usuario
+            new Claim("nombre", usuario.Nombre),                          // Nombre del usuario
             new Claim("id", usuario.UsuarioId.ToString()),                   // ID del usuario
-            new Claim(ClaimTypes.Role, usuario.Rol.Nombre)                   // Rol del usuario
+            new Claim(ClaimTypes.Role, usuario.Rol.Nombre)                       // Rol del usuario
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

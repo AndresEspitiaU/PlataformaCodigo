@@ -183,3 +183,4 @@ C:\Users\andre\OneDrive\Documentos\AprendeCodigo\PlataformaAPI\obj\Debug\net8.0\
 C:\Users\andre\OneDrive\Documentos\AprendeCodigo\PlataformaAPI\obj\Debug\net8.0\ref\PlataformaAPI.dll
 C:\Users\andre\OneDrive\Documentos\AprendeCodigo\PlataformaAPI\bin\Debug\net8.0\BCrypt.Net-Next.dll
 C:\Users\andre\OneDrive\Documentos\AprendeCodigo\PlataformaAPI\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\andre\OneDrive\Documentos\AprendeCodigo\PlataformaAPI\obj\Debug\net8.0\PlataformaAPI.sourcelink.json

@@ -1,0 +1,17 @@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 to-green-300">
+  <div class="bg-white shadow-md rounded-lg p-8 max-w-md w-full text-center">
+    <h1 class="text-2xl font-bold text-green-700">Bienvenido</h1>
+    <p class="text-gray-700 mt-2">
+      Hola, <span class="font-semibold">{{ userName }}</span>!
+    </p>
+    <p class="text-sm text-gray-500 mt-1">
+      Rol actual: <span class="font-semibold">{{ userRole }}</span>
+    </p>
+    <button
+      class="mt-6 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition duration-300"
+      (click)="logout()"
+    >
+      Cerrar Sesión
+    </button>
+  </div>
+</div>

@@ -16,6 +16,21 @@ public class CursosController : ControllerBase
         _context = context;
     }
 
+    // Obtener todos los cursos
+    [HttpGet]
+    public async Task<IActionResult> GetCursos()
+    {
+        Console.WriteLine("Solicitud GET a /api/Cursos recibida.");
+        var cursos = await _context.Cursos.ToListAsync();
+        Console.WriteLine($"Cantidad de cursos: {cursos.Count}");
+        return Ok(cursos);
+    }
+
+
+
+
+
+
     // Crear un curso
     [HttpPost]
     public async Task<IActionResult> CreateCurso([FromBody] CursoDto cursoDto)

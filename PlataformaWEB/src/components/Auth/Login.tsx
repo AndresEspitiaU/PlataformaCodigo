@@ -1,18 +1,44 @@
-import { useState } from "react";
-import api from "../api";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../../api";
+import authService from "../../services/authService";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const role = authService.getUserRole();
+
+    if (token) {
+      if (role === "Administrador") {
+        console.log("Se inició sesión con el rol: Administrador");
+        navigate("/admin");
+      } else {
+        console.log("Se inició sesión con el rol: Usuario");
+        navigate("/home");
+      }
+    }
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await api.post("/Auth/login", { email, password });
-      localStorage.setItem("token", response.data.token);
-      alert("Inicio de sesión exitoso");
+      localStorage.setItem("token", response.data.token); // Guarda el token
       setError("");
+
+      const role = authService.getUserRole(); // Decodifica el token para obtener el rol
+      console.log(`Se inició sesión con el rol: ${role}`); // Muestra el rol en la consola
+
+      if (role === "Administrador") {
+        navigate("/admin/cursos");
+      } else {
+        navigate("/home");
+      }
     } catch (err) {
       console.error("Error en el inicio de sesión:", err);
       setError("Credenciales incorrectas. Inténtalo nuevamente.");
@@ -22,8 +48,12 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">Iniciar Sesión</h2>
-        {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+        <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">
+          Iniciar Sesión
+        </h2>
+        {error && (
+          <p className="text-red-500 text-sm text-center mb-4">{error}</p>
+        )}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2">Correo Electrónico</label>
